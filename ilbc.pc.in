@@ -9,4 +9,4 @@ Requires:
 Version: @VERSION@
 Libs: -L${libdir} -lilbc
 Libs.private: -lm
-Cflags: -I${includedir}/silk/
+Cflags: -I${includedir}
