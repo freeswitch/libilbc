@@ -22,6 +22,9 @@ AM_CFLAGS = $(COMP_VENDOR_CFLAGS)
 
 noinst_SCRIPTS = ilbc.spec
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = ilbc.pc
+
 MAINTAINERCLEANFILES = Makefile.in
 
 EXTRA_DIST = ilbc.spec \

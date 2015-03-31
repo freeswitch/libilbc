@@ -282,6 +282,7 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/ilbc.h
                  tests/Makefile
+		 ilbc.pc
                  ilbc.spec])
 
 AC_OUTPUT
