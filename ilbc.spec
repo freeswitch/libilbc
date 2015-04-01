@@ -47,7 +47,7 @@ rm -rf %{buildroot}
 
 %{_libdir}/libilbc.so.*
 
-%{_datadir}/ilbc
+# %{_datadir}/ilbc
 
 %files devel
 %defattr(-,root,root,-)
@@ -55,6 +55,7 @@ rm -rf %{buildroot}
 %{_includedir}/ilbc.h
 %{_includedir}/ilbc
 %{_libdir}/libilbc.so
+%{_libdir}/pkgconfig/ilbc.pc
 
 %post -p /sbin/ldconfig
 
