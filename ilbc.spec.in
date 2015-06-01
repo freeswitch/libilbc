@@ -21,7 +21,6 @@ iLBC is a library for the iLBC low bit rate speech codec.
 Summary:    iLBC development files
 Group:      Development/Libraries
 Requires:   ilbc = %{version}
-PreReq:     /sbin/install-info
 
 %description devel
 iLBC development files.
