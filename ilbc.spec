@@ -1,7 +1,7 @@
 Summary:    iLBC is a library for the iLBC low bit rate speech codec.
 Name:       ilbc
 Version:    0.0.1
-Release:    1
+Release:    1%{?dist}
 License:    Global IP Sound iLBC Public License, v2.0
 Group:      System Environment/Libraries
 URL:        http://www.soft-switch.org/voipcodecs
