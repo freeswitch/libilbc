@@ -4,8 +4,6 @@ TMPDIR=ilbc.$$
 
 mkdir -p ../${TMPDIR}
 
-./bootstrap.sh
-
 cd ..
 cp -a libilbc ${TMPDIR}/ilbc-0.0.1
 cd ${TMPDIR}

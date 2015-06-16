@@ -13,6 +13,9 @@ Docdir:     %{_prefix}/doc
 
 BuildRequires: audiofile-devel
 BuildRequires: doxygen
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
 
 %description
 iLBC is a library for the iLBC low bit rate speech codec.
@@ -29,6 +32,7 @@ iLBC development files.
 %setup -q
 
 %build
+./bootstrap.sh
 %configure --enable-doc --disable-static --disable-rpath
 make
 
