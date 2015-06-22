@@ -1,5 +1,5 @@
 Summary:    iLBC is a library for the iLBC low bit rate speech codec.
-Name:       ilbc
+Name:       ilbc2
 Version:    0.0.1
 Release:    1%{?dist}
 License:    Global IP Sound iLBC Public License, v2.0
@@ -23,42 +23,44 @@ iLBC is a library for the iLBC low bit rate speech codec.
 %package devel
 Summary:    iLBC development files
 Group:      Development/Libraries
-Requires:   ilbc = %{version}
+Requires:   ilbc2 = %{version}
 
 %description devel
 iLBC development files.
 
 %prep
-%setup -q
+%setup -q -n ilbc-%{version}
 
 %build
 ./bootstrap.sh
-%configure --enable-doc --disable-static --disable-rpath
+%configure --enable-doc --disable-static --disable-rpath --libdir=%{_libdir}/ilbc2 --includedir=%{_includedir}/ilbc2
 make
 
 %install
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 make install DESTDIR=%{buildroot}
-rm %{buildroot}%{_libdir}/libilbc.la
+%{__rm} %{buildroot}%{_libdir}/ilbc2/libilbc.la
+%{__mkdir} -p %{buildroot}%{_libdir}/pkgconfig/
+%{__mv} %{buildroot}%{_libdir}/ilbc2/pkgconfig/ilbc.pc %{buildroot}%{_libdir}/pkgconfig/ilbc2.pc
 
 %clean
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
 %doc ChangeLog AUTHORS COPYING NEWS README 
 
-%{_libdir}/libilbc.so.*
+%{_libdir}/ilbc2/libilbc.so.*
 
 # %{_datadir}/ilbc
 
 %files devel
 %defattr(-,root,root,-)
 %doc doc/api
-%{_includedir}/ilbc.h
-%{_includedir}/ilbc
-%{_libdir}/libilbc.so
-%{_libdir}/pkgconfig/ilbc.pc
+%{_includedir}/ilbc2/ilbc.h
+%{_includedir}/ilbc2
+%{_libdir}/ilbc2/libilbc.so
+%{_libdir}/pkgconfig/ilbc2.pc
 
 %post -p /sbin/ldconfig
 

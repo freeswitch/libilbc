@@ -175,15 +175,6 @@ fi
 
 AC_LANG([C++])
 
-if test "${build}" = "${host}"
-then
-    case "${host}" in
-    x86_64-*)
-        AC_CHECK_FILE([${prefix}/lib64], libdir='$(exec_prefix)/lib64')
-        ;;
-    esac
-fi
-
 AC_LANG([C])
 
 if test "${build}" = "${host}"
