@@ -1,5 +1,5 @@
-libilbc (0.0.1-1) unstable; urgency=low
+libilbc (0.0.1~1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial release
 
- -- William King <william.king@quentustech.com>  Tue, 31 Mar 2015 12:02:23 -0700
+ -- FreeSWITCH Solutions <packages@freeswitch.com>  Tue, 31 Mar 2015 12:02:23 -0700
