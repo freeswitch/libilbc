@@ -1,18 +1,29 @@
-ARG BUILDER_IMAGE=debian:bullseye
-ARG MAINTAINER="Andrey Volk <andrey@signalwire.com>"
+ARG BUILDER_IMAGE=debian:bullseye-20240513
 
 FROM ${BUILDER_IMAGE} AS builder
+
+ARG MAINTAINER_NAME="Andrey Volk"
+ARG MAINTAINER_EMAIL="andrey@signalwire.com"
+
+ARG CODENAME=bullseye
+ARG ARCH=amd64
 
 ARG BUILD_NUMBER=42
 ARG GIT_SHA=0000000000
 
-MAINTAINER ${MAINTAINER}
+ARG DATA_DIR=/data
+
+LABEL maintainer="${MAINTAINER_NAME} <${MAINTAINER_EMAIL}>"
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt-get -q update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -yq install \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -q update \
+    && apt-get -y -q install \
         apt-transport-https \
+        autoconf \
+        automake \
         build-essential \
         ca-certificates \
         cmake \
@@ -22,6 +33,7 @@ RUN apt-get -q update && \
         dh-autoreconf \
         dos2unix \
         doxygen \
+        dpkg-dev \
         git \
         graphviz \
         libglib2.0-dev \
@@ -32,35 +44,45 @@ RUN apt-get -q update && \
 
 RUN update-ca-certificates --fresh
 
-ENV DATA_DIR=/data
-WORKDIR ${DATA_DIR}
+RUN echo "export CODENAME=${CODENAME}" | tee ~/.env \
+    && echo "export ARCH=${ARCH}" | tee -a ~/.env \
+    && chmod +x ~/.env
 
-COPY . ${DATA_DIR}
-RUN git reset --hard HEAD && git clean -xfd
-
-RUN echo "export CODENAME=$(lsb_release -sc | tr -d '\n')" | tee ~/.env && \
-    chmod +x ~/.env
-
-RUN git config --global --add safe.directory '*'
+RUN git config --global --add safe.directory '*' \
+    && git config --global user.name "${MAINTAINER_NAME}" \
+    && git config --global user.email "${MAINTAINER_EMAIL}"
 
 # Bootstrap and Build
-RUN echo "export VERSION=$(dpkg-parsechangelog --show-field Version | cut -f1 -d'-')" | tee -a ~/.env
-RUN . ~/.env && dch \
-    --controlmaint \
-    --distribution "${CODENAME}" \
-    --force-bad-version \
-    --force-distribution \
-    --newversion "${VERSION}-${BUILD_NUMBER}-${GIT_SHA}~${CODENAME}" \
-    "Nightly build, ${GIT_SHA}"
+COPY . ${DATA_DIR}
+WORKDIR ${DATA_DIR}
 
-RUN apt-get -q update && \
-    mk-build-deps --install --remove debian/control --tool "apt-get -y --no-install-recommends" && \
-    apt-get -y -f install
+RUN echo "export VERSION=$(dpkg-parsechangelog --show-field Version | cut -f1 -d'-')" \
+    | tee -a ~/.env
+
+RUN apt-get -q update \
+    && mk-build-deps \
+        --install \
+        --remove debian/control \
+        --tool "apt-get -y --no-install-recommends" \
+    && apt-get -y -f install
 
 ENV DEB_BUILD_OPTIONS="parallel=1"
-RUN . ~/.env && dch -b -M -v "${VERSION}-${BUILD_NUMBER}-${GIT_SHA}~${CODENAME}" \
-  --force-distribution -D "${CODENAME}" "Nightly build, ${GIT_SHA}"
-RUN debuild -b -us -uc && mkdir OUT && mv -v ../*.deb OUT/.
+
+RUN . ~/.env \
+    && dch \
+        --controlmaint \
+        --distribution "${CODENAME}" \
+        --force-bad-version \
+        --force-distribution \
+        --newversion "${VERSION}-${BUILD_NUMBER}-${GIT_SHA}~${CODENAME}" \
+    "Nightly build, ${GIT_SHA}" \
+    && debuild \
+        --no-tgz-check \
+        --build=binary \
+        --unsigned-source \
+        --unsigned-changes \
+    && mkdir OUT \
+    && mv -v ../*.{deb,changes} OUT/.
 
 # Artifacts image (mandatory part, the resulting image must have a single filesystem layer)
 FROM scratch
